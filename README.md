@@ -20,3 +20,6 @@ To run this project, you should:
     $ cd into the main folder
     $ $ python3 main.py
     
+## Images
+![Screenshot](amazonscraper.jpg)
+![Screenshot](amazonscrape.jpg)
