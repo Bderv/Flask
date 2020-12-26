@@ -8,6 +8,8 @@ from scrapy.signalmanager import dispatcher
 import time
 import os
 
+import sqlite3 as sql 
+
 # Importing our Scraping Function from the amazon_scraping file
 
 from crawlshop.crawlshop.spiders.amazon_scraping import ReviewspiderSpider
@@ -42,10 +44,58 @@ def submit():
 
 @app.route("/scrape")
 def scrape():
+    global baseURL
+    global output_data
+    
+    # Getting the unique table name from the input URL.
+    table_name = baseURL.split("?")[0]
+    
+    # Creating a connection to database
+    conn = sql.connect('database.db')
 
-    scrape_with_crochet(baseURL=baseURL) # Passing that URL to our Scraping Function
+    # Creating an object of the Database to perform the operations.
+    c = conn.cursor()
+    
+    # This will extract the count of tables with name='<table_name>'
+    # It can only be zero or one.
+    c.execute('''SELECT count(name) FROM sqlite_master WHERE name='%s' AND type='table' '''%table_name)
 
-    time.sleep(20) # Pause the function while the scrapy spider is running
+    if(c.fetchone()[0]==0):
+
+    # Passing the URL for Scraping
+        scrape_with_crochet(baseURL=baseURL) # Passing that URL to our Scraping Function
+        time.sleep(10) # Pause the function while the scrapy spider is running
+        # Scraped Data is appended to the output_list
+
+        # Creating the table with name = <table_name>
+        # Note: table_name will be unique for each product
+        conn.execute('''CREATE TABLE '%s' (names TEXT,  reviewerLink TEXT, reviewTitles TEXT, reviewBody TEXT, verifiedPurchase TEXT, postDate TEXT, starRating TEXT, helpful TEXT, nextPage TEXT)''' %table_name)
+
+        # Appending the data into the table from the output_list
+        for x in output_data:
+            c.execute('''INSERT INTO '%s' (names, reviewerLink, reviewTitles, reviewBody, verifiedPurchase, postDate, starRating, helpful, nextPage) VALUES (?,?,?,?,?,?,?,?,?)''' %table_name ,(x["names"], x["reviewerLink"], x["reviewTitles"], x["reviewBody"], x["verifiedPurchase"], x["postDate"], x["starRating"], x["helpful"], x["nextPage"]))
+
+        conn.commit()
+        conn.close()
+
+        print("Table and Records created Successfully!")
+
+    else: # The code will come here if it finds the URL data in the DB
+        conn.row_factory = sql.Row
+        cur = conn.cursor()
+        
+        # Selecting everything from the table inside the DB.
+        cur.execute(''' SELECT * from '%s' '''%table_name)
+
+        # Fetching the data from the cur object.
+        rows = cur.fetchall()
+        
+        # Storing the fetched data into the global output_data list.
+        output_data = [dict(i) for i in rows]
+
+        conn.close()
+
+        print("Data Fetched Successfully!")
     
     return jsonify(output_data) # Returns the scraped data after being running for 20 seconds.
 
