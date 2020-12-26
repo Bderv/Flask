@@ -62,7 +62,7 @@ class ReviewspiderSpider(scrapy.Spider):
             
             yield MyItem(names=name, reviewerLink = reviewLink, reviewTitles=title, reviewBody=Review, verifiedPurchase=Verified, postDate=date, starRating=rating, helpful=helpful_count, nextPage=next_urls)
 
-    # This will get the next psge URL
+    # This will get the next page URL
         next_page = response.css('.a-last > a::attr(href)').extract_first()
         # Checking if next page is not none then loop back in the same function with the next page URL.
         if next_page is not None:
