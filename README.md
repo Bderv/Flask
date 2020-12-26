@@ -1,5 +1,5 @@
 # Amazon Web Crawler
-Using Scrapy and Flask to create an web crawler that scrapes all Amazon Product Reviews using just its URL and stores all of the data in a JSON file in seconds.
+Used Scrapy and Flask to create an web crawler that scrapes all Amazon Product Reviews using just its URL and stores all of the data in a JSON file in seconds.
 
 ## Technologies
 This project is created with:
