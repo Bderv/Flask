@@ -32,7 +32,7 @@ If you ran the project and have trouble getting the JSON to parse, or are gettin
         'scrapy.extensions.closespider.CloseSpider': 1
         }
   
-  This lessens the workload and ensures we don't put too much load on amazon servers. For more settings look at the Documentation below.
+  This lessens the workload and ensures we don't put too much load on amazon servers. For more settings, or if your receiving a 302 response from the server while scraping, check out the documentation below.
  
  ## Documentation
  * https://docs.scrapy.org/en/latest/intro/tutorial.html
